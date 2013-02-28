@@ -27,7 +27,7 @@ import org.kiji.common.flags.ValueParser;
 public abstract class SimpleValueParser<T> implements ValueParser<T> {
   /** {@inheritDoc} */
   @Override
-  public boolean parsesSubClasses() {
+  public boolean parsesSubclasses() {
     return false;
   }
 }

@@ -30,7 +30,7 @@ public interface ValueParser<T> {
   Class<? extends T> getParsedClass();
 
   /** @return whether this parser also parses subclasses */
-  boolean parsesSubClasses();
+  boolean parsesSubclasses();
 
   /**
    * Parses a value from a string command-line flag.

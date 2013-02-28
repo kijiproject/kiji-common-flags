@@ -31,11 +31,11 @@ import org.kiji.common.flags.ValueParser;
 /**
  * Parser for enum values from command-line flags.
  */
-@SuppressWarnings("rawtypes")
+@SuppressWarnings("unchecked")
 public final class EnumParser implements ValueParser<Enum> {
   /** {@inheritDoc} */
   @Override
-  public boolean parsesSubClasses() {
+  public boolean parsesSubclasses() {
     return true;
   }
 

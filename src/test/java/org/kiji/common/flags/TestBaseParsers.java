@@ -45,7 +45,7 @@ public class TestBaseParsers {
 
     /** {@inheritDoc} */
     @Override
-    public boolean parsesSubClasses() {
+    public boolean parsesSubclasses() {
       return true;
     }
 
@@ -65,7 +65,7 @@ public class TestBaseParsers {
 
     /** {@inheritDoc} */
     @Override
-    public boolean parsesSubClasses() {
+    public boolean parsesSubclasses() {
       return true;
     }
 

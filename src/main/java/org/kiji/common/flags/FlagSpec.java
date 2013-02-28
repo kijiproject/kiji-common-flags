@@ -41,8 +41,7 @@ public class FlagSpec {
   private final Object mObj;
 
   /** Parser for this flag. */
-  @SuppressWarnings("rawtypes")
-  private final ValueParser mParser;
+  private final ValueParser<?> mParser;
 
   /**
    * Creates a new <code>FlagSpec</code> instance.
@@ -65,15 +64,14 @@ public class FlagSpec {
    *
    * @return the command-line argument parser for this flag.
    */
-  @SuppressWarnings("rawtypes")
-  private ValueParser findParser() {
+  private ValueParser<?> findParser() {
     final Class<?> fieldClass = mField.getType();
 
     if (mFlag.parser() != ValueParser.class) {
       try {
-        final ValueParser parser = mFlag.parser().newInstance();
+        final ValueParser<?> parser = mFlag.parser().newInstance();
         final Class<?> parsedClass = parser.getParsedClass();
-        if (parser.parsesSubClasses()) {
+        if (parser.parsesSubclasses()) {
           if (!parsedClass.isAssignableFrom(fieldClass)) {
             throw new RuntimeException(String.format(
                 "Parser '%s' does not match field: %s", parser.getClass().getName(), mField));
@@ -92,7 +90,7 @@ public class FlagSpec {
       }
     }
 
-    final ValueParser simpleParser = PARSERS.get(fieldClass);
+    final ValueParser<?> simpleParser = PARSERS.get(fieldClass);
     if (simpleParser != null) {
       return simpleParser;
     }
@@ -241,7 +239,7 @@ public class FlagSpec {
       Map<Class<?>, ValueParser<?>> baseParserMap) {
     for (ValueParser<?> parser : parsers) {
       final Class<?> klass = parser.getParsedClass();
-      if (parser.parsesSubClasses()) {
+      if (parser.parsesSubclasses()) {
         // Ensure there is no conflicting base parser already registered:
         for (Map.Entry<Class<?>, ValueParser<?>> entry : baseParserMap.entrySet()) {
           final Class<?> registeredClass = entry.getKey();
