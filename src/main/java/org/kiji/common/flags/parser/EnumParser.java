@@ -31,7 +31,6 @@ import org.kiji.common.flags.ValueParser;
 /**
  * Parser for enum values from command-line flags.
  */
-@SuppressWarnings("unchecked")
 public final class EnumParser implements ValueParser<Enum> {
   /** {@inheritDoc} */
   @Override
