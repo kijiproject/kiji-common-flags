@@ -17,8 +17,6 @@
 
 package org.kiji.common.flags.parser;
 
-import java.util.Locale;
-
 import org.kiji.common.flags.FlagSpec;
 import org.kiji.common.flags.IllegalFlagValueException;
 
@@ -35,11 +33,6 @@ import org.kiji.common.flags.IllegalFlagValueException;
  *   <li> Other inputs are rejected.
  */
 public class PrimitiveBooleanParser extends SimpleValueParser<Boolean> {
-  private static enum Truth {
-    TRUE, YES,
-    FALSE, NO,
-  }
-
   /** {@inheritDoc} */
   @Override
   public Class<? extends Boolean> getParsedClass() {
@@ -58,17 +51,7 @@ public class PrimitiveBooleanParser extends SimpleValueParser<Boolean> {
     }
 
     try {
-      final Truth truth = Truth.valueOf(string.toUpperCase(Locale.ROOT));
-      switch (truth) {
-      case TRUE:
-      case YES:
-        return true;
-      case FALSE:
-      case NO:
-        return false;
-      default:
-        throw new RuntimeException("Unexpected truth enum value: " + truth);
-      }
+      return Truth.parse(string);
     } catch (IllegalArgumentException iae) {
       throw new IllegalFlagValueException(flag, string);
     }

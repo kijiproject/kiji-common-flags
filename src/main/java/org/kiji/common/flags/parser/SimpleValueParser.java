@@ -20,10 +20,10 @@ package org.kiji.common.flags.parser;
 import java.util.List;
 
 import com.google.common.base.Joiner;
-
 import com.google.common.base.Preconditions;
 
 import org.kiji.common.flags.FlagSpec;
+import org.kiji.common.flags.IllegalFlagOverrideException;
 import org.kiji.common.flags.ValueParser;
 
 /**
@@ -40,8 +40,8 @@ public abstract class SimpleValueParser<T> implements ValueParser<T> {
    * Name of the system property that controls whether we allow flags to
    * be overridden when repeated.
    */
-  public static final String DISALLOW_FLAG_OVERRIDE_PROPERTY =
-      "org.kiji.common.flags.disallow-flag-override";
+  public static final String ALLOW_FLAG_OVERRIDE_PROPERTY =
+      "org.kiji.common.flags.allow.flag.override";
 
   /** {@inheritDoc} */
   @Override
@@ -49,17 +49,26 @@ public abstract class SimpleValueParser<T> implements ValueParser<T> {
     return false;
   }
 
+  /** @return whether flag overrides are allowed. */
+  private static boolean allowFlagOverride() {
+    try {
+      return Truth.parse(System.getProperty(ALLOW_FLAG_OVERRIDE_PROPERTY, "true"));
+    } catch (IllegalArgumentException iea) {
+      throw new IllegalArgumentException(String.format("Invalid value '%s' for property '%s'.",
+          System.getProperty(ALLOW_FLAG_OVERRIDE_PROPERTY),
+          ALLOW_FLAG_OVERRIDE_PROPERTY));
+    }
+  }
+
   /** {@inheritDoc} */
   @Override
   public T parse(FlagSpec flag, List<String> values) {
     Preconditions.checkArgument(!values.isEmpty());
 
-    final String  disallowFlagOverride =
-        System.getProperty(DISALLOW_FLAG_OVERRIDE_PROPERTY, null);
-    if ((disallowFlagOverride != null) && disallowFlagOverride.equalsIgnoreCase("true")) {
-      Preconditions.checkArgument(values.size() == 1,
+    if (!allowFlagOverride() && (values.size() > 1)) {
+      throw new IllegalFlagOverrideException(String.format(
           "Flag '%s' specified multiple times with values: %s",
-          flag.getName(), Joiner.on(",").join(values));
+          flag.getName(), Joiner.on(",").join(values)));
     }
 
     // Parse all values even if we only use the last flag to override previous instances:

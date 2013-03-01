@@ -21,7 +21,7 @@ package org.kiji.common.flags;
  * Thrown when the value assigned on the command line cannot be coerced into the Java
  * field because it is an incompatible type.
  */
-public class IllegalFlagValueException extends RuntimeException {
+public class IllegalFlagValueException extends IllegalArgumentException {
   private static final long serialVersionUID = -6219698605704501226L;
 
   /**
