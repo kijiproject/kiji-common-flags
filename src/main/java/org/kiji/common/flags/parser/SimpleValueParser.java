@@ -17,17 +17,67 @@
 
 package org.kiji.common.flags.parser;
 
+import java.util.List;
+
+import com.google.common.base.Joiner;
+
+import com.google.common.base.Preconditions;
+
+import org.kiji.common.flags.FlagSpec;
 import org.kiji.common.flags.ValueParser;
 
 /**
- * Base class for parsers of a single exact value class.
+ * Base class for parsers of simple, single values (no collections).
+ *
+ * The default behavior allows such flags to appear multiple times, overriding previous instances.
+ * By setting the system property -Dorg.kiji.common.flags.disallow-flag-override=true, such flags
+ * cannot be overridden anymore (ie. cannot be specified more than once).
  *
  * @param <T> Type of the parsed value.
  */
 public abstract class SimpleValueParser<T> implements ValueParser<T> {
+  /**
+   * Name of the system property that controls whether we allow flags to
+   * be overridden when repeated.
+   */
+  public static final String DISALLOW_FLAG_OVERRIDE_PROPERTY =
+      "org.kiji.common.flags.disallow-flag-override";
+
   /** {@inheritDoc} */
   @Override
   public boolean parsesSubclasses() {
     return false;
   }
+
+  /** {@inheritDoc} */
+  @Override
+  public T parse(FlagSpec flag, List<String> values) {
+    Preconditions.checkArgument(!values.isEmpty());
+
+    final String  disallowFlagOverride =
+        System.getProperty(DISALLOW_FLAG_OVERRIDE_PROPERTY, null);
+    if ((disallowFlagOverride != null) && disallowFlagOverride.equalsIgnoreCase("true")) {
+      Preconditions.checkArgument(values.size() == 1,
+          "Flag '%s' specified multiple times with values: %s",
+          flag.getName(), Joiner.on(",").join(values));
+    }
+
+    // Parse all values even if we only use the last flag to override previous instances:
+    T parsed = null;
+    for (String value : values) {
+      parsed = parse(flag, value);
+    }
+    return parsed;
+  }
+
+  /**
+   * Parses a value from a string command-line flag.
+   *
+   * @param flag Specification of the flag being parsed.
+   *     Includes the Flag annotation and the field details.
+   * @param value The command-line argument associated to this flag.
+   *     May be null, empty or non empty.
+   * @return the parsed value.
+   */
+  public abstract T parse(FlagSpec flag, String value);
 }
