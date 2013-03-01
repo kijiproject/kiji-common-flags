@@ -30,7 +30,7 @@ import org.kiji.common.flags.ValueParser;
  * Base class for parsers of simple, single values (no collections).
  *
  * The default behavior allows such flags to appear multiple times, overriding previous instances.
- * By setting the system property -Dorg.kiji.common.flags.disallow-flag-override=true, such flags
+ * By setting the system property -Dorg.kiji.common.flags.allow.flag.override=true, such flags
  * cannot be overridden anymore (ie. cannot be specified more than once).
  *
  * @param <T> Type of the parsed value.
